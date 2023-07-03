@@ -13,8 +13,8 @@ class Enricher(Step, ABC):
         
 
     # only for typing...
-    def init(name: str, config: dict) -> Enricher:
-        return Step.init(name, config, Enricher)
+    def init(self, config: dict) -> Enricher:
+        return Step.init(self, config, Enricher)
 
     @abstractmethod
     def enrich(self, to_enrich: Metadata) -> None: pass

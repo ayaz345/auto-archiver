@@ -20,7 +20,7 @@ class ThumbnailEnricher(Enricher):
         return {}
 
     def enrich(self, to_enrich: Metadata) -> None:
-        logger.debug(f"generating thumbnails")
+        logger.debug("generating thumbnails")
         for i, m in enumerate(to_enrich.media[::]):
             if m.is_video():
                 folder = os.path.join(ArchivingContext.get_tmp_dir(), str(uuid.uuid4()))
@@ -38,8 +38,11 @@ class ThumbnailEnricher(Enricher):
                 stream.output(os.path.join(folder, 'out%d.jpg')).run()
 
                 thumbnails = os.listdir(folder)
-                thumbnails_media = []
-                for t, fname in enumerate(thumbnails):
-                    if fname[-3:] == 'jpg':
-                        thumbnails_media.append(Media(filename=os.path.join(folder, fname)).set("id", f"thumbnail_{t}"))
+                thumbnails_media = [
+                    Media(filename=os.path.join(folder, fname)).set(
+                        "id", f"thumbnail_{t}"
+                    )
+                    for t, fname in enumerate(thumbnails)
+                    if fname[-3:] == 'jpg'
+                ]
                 to_enrich.media[i].set("thumbnails", thumbnails_media)

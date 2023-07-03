@@ -14,9 +14,9 @@ class Database(Step, ABC):
         # without this STEP.__init__ is not called
         super().__init__(config)
 
-    def init(name: str, config: dict) -> Database:
+    def init(self, config: dict) -> Database:
         # only for typing...
-        return Step.init(name, config, Database)
+        return Step.init(self, config, Database)
 
     def started(self, item: Metadata) -> None:
         """signals the DB that the given item archival has started"""

@@ -19,15 +19,17 @@ class Step(ABC):
     @staticmethod
     def configs() -> dict: return {}
 
-    def init(name: str, config: dict, child: Type[Step]) -> Step:
+    def init(self, config: dict, child: Type[Step]) -> Step:
         """
         looks into direct subclasses of child for name and returns such an object
         TODO: cannot find subclasses of child.subclasses
         """
         for sub in child.__subclasses__():
-            if sub.name == name:
+            if sub.name == self:
                 return sub(config)
-        raise ClassFoundException(f"Unable to initialize STEP with {name=}, check your configuration file/step names, and make sure you made the step discoverable by putting it into __init__.py")
+        raise ClassFoundException(
+            f"Unable to initialize STEP with {self:=}, check your configuration file/step names, and make sure you made the step discoverable by putting it into __init__.py"
+        )
 
     def assert_valid_string(self, prop: str) -> None:
         """

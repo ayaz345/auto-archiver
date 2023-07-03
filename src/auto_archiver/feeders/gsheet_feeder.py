@@ -82,14 +82,14 @@ class GsheetsFeeder(Gsheets, Feeder):
         if len(self.allow_worksheets) and sheet_name not in self.allow_worksheets:
             # ALLOW rules exist AND sheet name not explicitly allowed
             return False
-        if len(self.block_worksheets) and sheet_name in self.block_worksheets:
-            # BLOCK rules exist AND sheet name is blocked
-            return False
-        return True
+        return (
+            not len(self.block_worksheets)
+            or sheet_name not in self.block_worksheets
+        )
 
     def missing_required_columns(self, gw: GWorksheet) -> list:
-        missing = []
-        for required_col in ['url', 'status']:
-            if not gw.col_exists(required_col):
-                missing.append(required_col)
-        return missing
+        return [
+            required_col
+            for required_col in ['url', 'status']
+            if not gw.col_exists(required_col)
+        ]

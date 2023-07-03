@@ -26,15 +26,15 @@ class Webdriver:
 
         if self.facebook_accept_cookies:
             try:
-                logger.debug(f'Trying fb click accept cookie popup.')
+                logger.debug('Trying fb click accept cookie popup.')
                 self.driver.get("http://www.facebook.com")
                 foo = self.driver.find_element(By.XPATH, "//button[@data-cookiebanner='accept_only_essential_button']")
                 foo.click()
-                logger.debug(f'fb click worked')
+                logger.debug('fb click worked')
                 # linux server needs a sleep otherwise facebook cookie won't have worked and we'll get a popup on next page
                 time.sleep(2)
             except:
-                logger.warning(f'Failed on fb accept cookies.')
+                logger.warning('Failed on fb accept cookies.')
 
         return self.driver
 

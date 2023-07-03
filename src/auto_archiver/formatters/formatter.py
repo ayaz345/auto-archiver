@@ -12,9 +12,9 @@ class Formatter(Step):
         # without this STEP.__init__ is not called
         super().__init__(config)
 
-    def init(name: str, config: dict) -> Formatter:
+    def init(self, config: dict) -> Formatter:
         # only for code typing
-        return Step.init(name, config, Formatter)
+        return Step.init(self, config, Formatter)
 
     @abstractmethod
     def format(self, item: Metadata) -> Media: return None

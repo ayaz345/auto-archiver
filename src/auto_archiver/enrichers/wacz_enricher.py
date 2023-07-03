@@ -26,10 +26,10 @@ class WaczEnricher(Enricher):
 
     def enrich(self, to_enrich: Metadata) -> bool:
         url = to_enrich.get_url()
-        
-        collection = str(uuid.uuid4())[0:8]
+
+        collection = str(uuid.uuid4())[:8]
         browsertrix_home = os.path.abspath(ArchivingContext.get_tmp_dir())
-        
+
         if os.getenv('RUNNING_IN_DOCKER'):
             logger.debug(f"generating WACZ without Docker for {url=}")
 
@@ -45,12 +45,12 @@ class WaczEnricher(Enricher):
                 "--behaviors", "autoscroll,autoplay,autofetch,siteSpecific",
                 "--behaviorTimeout", str(self.timeout),
                 "--timeout", str(self.timeout)]
-            
+
             if self.profile:
                 cmd.extend(["--profile", os.path.join("/app", str(self.profile))])
         else:
             logger.debug(f"generating WACZ in Docker for {url=}")
-            
+
             cmd = [
                 "docker", "run",
                 "--rm",  # delete container once it has completed running
@@ -79,13 +79,13 @@ class WaczEnricher(Enricher):
             logger.error(f"WACZ generation failed: {e}")
             return False
 
-        
+
 
         if os.getenv('RUNNING_IN_DOCKER'):
             filename = os.path.join("collections", collection, f"{collection}.wacz")
         else:
             filename = os.path.join(browsertrix_home, "collections", collection, f"{collection}.wacz")
-        
+
         if not os.path.exists(filename):
             logger.warning(f"Unable to locate and upload WACZ  {filename=}")
             return False

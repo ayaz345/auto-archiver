@@ -78,8 +78,10 @@ class GDriveStorage(Storage):
         parent_id, folder_id = self.root_folder_id, None
         path_parts = media.key.split(os.path.sep)
         filename = path_parts[-1]
-        logger.info(f"looking for folders for {path_parts[0:-1]} before getting url for {filename=}")
-        for folder in path_parts[0:-1]:
+        logger.info(
+            f"looking for folders for {path_parts[:-1]} before getting url for {filename:=}"
+        )
+        for folder in path_parts[:-1]:
             folder_id = self._get_id_from_parent_and_name(parent_id, folder, use_mime_type=True, raise_on_missing=True)
             parent_id = folder_id
 
@@ -105,8 +107,10 @@ class GDriveStorage(Storage):
         parent_id, upload_to = self.root_folder_id, None
         path_parts = media.key.split(os.path.sep)
         filename = path_parts[-1]
-        logger.info(f"checking folders {path_parts[0:-1]} exist (or creating) before uploading {filename=}")
-        for folder in path_parts[0:-1]:
+        logger.info(
+            f"checking folders {path_parts[:-1]} exist (or creating) before uploading {filename:=}"
+        )
+        for folder in path_parts[:-1]:
             upload_to = self._get_id_from_parent_and_name(parent_id, folder, use_mime_type=True, raise_on_missing=False)
             if upload_to is None:
                 upload_to = self._mkdir(folder, parent_id)
@@ -146,7 +150,7 @@ class GDriveStorage(Storage):
         debug_header: str = f"[searching {name=} in {parent_id=}]"
         query_string = f"'{parent_id}' in parents and name = '{name}' and trashed = false "
         if use_mime_type:
-            query_string += f" and mimeType='application/vnd.google-apps.folder' "
+            query_string += " and mimeType='application/vnd.google-apps.folder' "
 
         for attempt in range(retries):
             results = self.service.files().list(

@@ -26,20 +26,18 @@ class Metadata:
         merges two Metadata instances, will overwrite according to overwrite_left flag
         """
         if not right: return self
-        if overwrite_left:
-            if right.status and len(right.status):
-                self.status = right.status
-            self.rearchivable |= right.rearchivable
-            for k, v in right.metadata.items():
-                assert k not in self.metadata or type(v) == type(self.get(k))
-                if type(v) not in [dict, list, set] or k not in self.metadata:
-                    self.set(k, v)
-                else:  # key conflict
-                    if type(v) in [dict, set]: self.set(k, self.get(k) | v)
-                    elif type(v) == list: self.set(k, self.get(k) + v)
-            self.media.extend(right.media)
-        else:  # invert and do same logic
+        if not overwrite_left:
             return right.merge(self)
+        if right.status and len(right.status):
+            self.status = right.status
+        self.rearchivable |= right.rearchivable
+        for k, v in right.metadata.items():
+            assert k not in self.metadata or type(v) == type(self.get(k))
+            if type(v) not in [dict, list, set] or k not in self.metadata:
+                self.set(k, v)
+            elif type(v) in [dict, set]: self.set(k, self.get(k) | v)
+            elif type(v) == list: self.set(k, self.get(k) + v)
+        self.media.extend(right.media)
         return self
 
     def store(self: Metadata, override_storages: List = None):
@@ -59,8 +57,7 @@ class Metadata:
         return self.metadata.get(key, default)
 
     def success(self, context: str = None) -> Metadata:
-        if context: self.status = f"{context}: success"
-        else: self.status = "success"
+        self.status = f"{context}: success" if context else "success"
         return self
 
     def is_success(self) -> bool:
@@ -78,7 +75,7 @@ class Metadata:
 
 
     def set_url(self, url: str) -> Metadata:
-        assert type(url) is str and len(url) > 0, "invalid URL"
+        assert type(url) is str and url != "", "invalid URL"
         return self.set("url", url)
 
     def get_url(self) -> str:
@@ -107,8 +104,7 @@ class Metadata:
         ts = self.get("timestamp")
         if not ts: return ts
         if utc: ts = ts.replace(tzinfo=datetime.timezone.utc)
-        if iso: return ts.isoformat()
-        return ts
+        return ts.isoformat() if iso else ts
 
     def add_media(self, media: Media, id: str = None) -> Metadata:
         # adds a new media, optionally including an id
@@ -120,14 +116,10 @@ class Metadata:
         return media
 
     def get_media_by_id(self, id: str, default=None) -> Media:
-        for m in self.media:
-            if m.get("id") == id: return m
-        return default
+        return next((m for m in self.media if m.get("id") == id), default)
 
     def get_first_image(self, default=None) -> Media:
-        for m in self.media:
-            if "image" in m.mimetype: return m
-        return default
+        return next((m for m in self.media if "image" in m.mimetype), default)
 
     def set_final_media(self, final: Media) -> Metadata:
         """final media is a special type of media: if you can show only 1 this is it, it's useful for some DBs like GsheetDb"""

@@ -41,7 +41,7 @@ class InstagramTbotArchiver(Archiver):
 
     def download(self, item: Metadata) -> Metadata:
         url = item.get_url()
-        if not "instagram.com" in url: return False
+        if "instagram.com" not in url: return False
 
         result = Metadata()
         tmp_dir = ArchivingContext.get_tmp_dir()
@@ -61,8 +61,9 @@ class InstagramTbotArchiver(Archiver):
                     since_id = max(since_id, post.id)
                     if post.media and post.id not in seen_media:
                         filename_dest = os.path.join(tmp_dir, f'{chat.id}_{post.id}')
-                        media = self.client.download_media(post.media, filename_dest)
-                        if media: 
+                        if media := self.client.download_media(
+                            post.media, filename_dest
+                        ):
                             result.add_media(Media(media))
                             seen_media.append(post.id)
                     if post.message: message += post.message
@@ -70,7 +71,7 @@ class InstagramTbotArchiver(Archiver):
             if "You must enter a URL to a post" in message: 
                 logger.debug(f"invalid link {url=} for {self.name}: {message}")
                 return False
-                
+
             if message:
                 result.set_content(message).set_title(message[:128])
 

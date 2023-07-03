@@ -37,9 +37,9 @@ class Storage(Step):
             }
         }
 
-    def init(name: str, config: dict) -> Storage:
+    def init(self, config: dict) -> Storage:
         # only for typing...
-        return Step.init(name, config, Storage)
+        return Step.init(self, config, Storage)
 
     def store(self, media: Media, url: str) -> None:
         if media.is_stored(): 
