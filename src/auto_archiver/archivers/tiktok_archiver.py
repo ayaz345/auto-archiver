@@ -41,7 +41,9 @@ class TiktokArchiver(Archiver):
             logger.warning(f'Other Tiktok error {error}')
 
         try:
-            filename = os.path.join(ArchivingContext.get_tmp_dir(), f'{str(uuid.uuid4())[0:8]}.mp4')
+            filename = os.path.join(
+                ArchivingContext.get_tmp_dir(), f'{str(uuid.uuid4())[:8]}.mp4'
+            )
             tiktok_media = tiktok_downloader.snaptik(url).get_media()
 
             if len(tiktok_media) <= 0:

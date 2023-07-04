@@ -13,7 +13,5 @@ class UrlUtil:
         checks if URL is behind an authentication wall meaning steps like wayback, wacz, ... may not work
         """
         if UrlUtil.telegram_private.match(url): return True
-        if UrlUtil.is_istagram.match(url): return True
-
-        return False
+        return bool(UrlUtil.is_istagram.match(url))
 

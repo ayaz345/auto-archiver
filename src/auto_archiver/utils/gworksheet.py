@@ -69,9 +69,7 @@ class GWorksheet:
         if type(row) == int:
             row = self.get_row(row)
 
-        if col_index >= len(row):
-            return ''
-        return row[col_index]
+        return '' if col_index >= len(row) else row[col_index]
 
     def get_cell_or_default(self, row, col: str, default: str = None, fresh=False, when_empty_use_default=True):
         """
@@ -79,9 +77,7 @@ class GWorksheet:
         """
         try:
             val = self.get_cell(row, col, fresh)
-            if when_empty_use_default and val.strip() == "":
-                return default
-            return val
+            return default if when_empty_use_default and val.strip() == "" else val
         except:
             return default
 
@@ -95,10 +91,7 @@ class GWorksheet:
         receives a list of [(row:int, col:str, val)] and batch updates it, the parameters are the same as in the self.set_cell() method
         """
         cell_updates = [
-            {
-                'range': self.to_a1(row, col),
-                'values': [[str(val)[0:49999]]]
-            }
+            {'range': self.to_a1(row, col), 'values': [[str(val)[:49999]]]}
             for row, col, val in cell_updates
         ]
         self.wks.batch_update(cell_updates, value_input_option='USER_ENTERED')

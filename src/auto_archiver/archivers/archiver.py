@@ -15,9 +15,9 @@ class Archiver(Step):
         # without this STEP.__init__ is not called
         super().__init__(config)
 
-    def init(name: str, config: dict) -> Archiver:
+    def init(self, config: dict) -> Archiver:
         # only for typing...
-        return Step.init(name, config, Archiver)
+        return Step.init(self, config, Archiver)
 
     def setup(self) -> None:
         # used when archivers need to login or do other one-time setup
@@ -38,9 +38,7 @@ class Archiver(Step):
         see https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
         """
         mime = mimetypes.guess_type(path)[0]
-        if mime is not None:
-            return mime.split("/")[0]
-        return ""
+        return mime.split("/")[0] if mime is not None else ""
 
     def download_from_url(self, url: str, to_filename: str = None, item: Metadata = None) -> str:
         """

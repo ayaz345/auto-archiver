@@ -26,7 +26,7 @@ class TelegramArchiver(Archiver):
     def download(self, item: Metadata) -> Metadata:
         url = item.get_url()
         # detect URLs that we definitely cannot handle
-        if 't.me' != item.netloc:
+        if item.netloc != 't.me':
             return False
 
         headers = {

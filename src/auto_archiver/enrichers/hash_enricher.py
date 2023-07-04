@@ -43,7 +43,8 @@ class HashEnricher(Enricher):
         else: return ""
         with open(filename, "rb") as f:
             while True:
-                buf = f.read(self.chunksize)
-                if not buf: break
-                hash.update(buf)
+                if buf := f.read(self.chunksize):
+                    hash.update(buf)
+                else:
+                    break
         return hash.hexdigest()

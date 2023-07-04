@@ -13,9 +13,9 @@ class Feeder(Step):
         # without this STEP.__init__ is not called
         super().__init__(config)
 
-    def init(name: str, config: dict) -> Feeder:
+    def init(self, config: dict) -> Feeder:
         # only for code typing
-        return Step.init(name, config, Feeder)
+        return Step.init(self, config, Feeder)
 
     @abstractmethod
     def __iter__(self) -> Metadata: return None

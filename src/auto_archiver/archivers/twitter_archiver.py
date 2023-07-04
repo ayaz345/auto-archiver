@@ -61,7 +61,7 @@ class TwitterArchiver(Archiver):
 
         result.set_title(tweet.content).set_content(tweet.json()).set_timestamp(tweet.date)
         if tweet.media is None:
-            logger.debug(f'No media found, archiving tweet text only')
+            logger.debug('No media found, archiving tweet text only')
             return result
 
         for i, tweet_media in enumerate(tweet.media):
@@ -69,7 +69,9 @@ class TwitterArchiver(Archiver):
             mimetype = ""
             if type(tweet_media) == Video:
                 variant = max(
-                    [v for v in tweet_media.variants if v.bitrate], key=lambda v: v.bitrate)
+                    (v for v in tweet_media.variants if v.bitrate),
+                    key=lambda v: v.bitrate,
+                )
                 media.set("src", variant.url).set("duration", tweet_media.duration)
                 mimetype = variant.contentType
             elif type(tweet_media) == Gif:
@@ -117,10 +119,7 @@ class TwitterArchiver(Archiver):
         if r.status_code != 200: return False
         tweet = r.json()
 
-        urls = []
-        for p in tweet.get("photos", []):
-            urls.append(p["url"])
-
+        urls = [p["url"] for p in tweet.get("photos", [])]
         # 1 tweet has 1 video max
         if "video" in tweet:
             v = tweet["video"]
@@ -156,8 +155,7 @@ class TwitterArchiver(Archiver):
         variant, width, height = None, 0, 0
         for var in variants:
             if var.get("type", "") == "video/mp4":
-                width_height = re.search(r"\/(\d+)x(\d+)\/", var["src"])
-                if width_height:
+                if width_height := re.search(r"\/(\d+)x(\d+)\/", var["src"]):
                     w, h = int(width_height[1]), int(width_height[2])
                     if w > width or h > height:
                         width, height = w, h
